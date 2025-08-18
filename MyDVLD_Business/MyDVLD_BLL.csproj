@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{7DAE0770-77B1-4A5E-91CC-B8DDAD1F907F}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>MyDVLD_Business</RootNamespace>
+    <AssemblyName>MyDVLD_Business</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="BCrypt.Net-Next, Version=4.0.3.0, Culture=neutral, PublicKeyToken=1e11be04b6288443, processorArchitecture=MSIL">
+      <HintPath>..\packages\BCrypt.Net-Next.4.0.3\lib\net472\BCrypt.Net-Next.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Core" />
+    <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Memory.4.5.4\lib\net461\System.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.5.3\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Behaviours\ApplicationService.cs" />
+    <Compile Include="Behaviours\ApplicationTypeService.cs" />
+    <Compile Include="Behaviours\CountryManager.cs" />
+    <Compile Include="Behaviours\DetainedLicenseService.cs" />
+    <Compile Include="Behaviours\DriverService.cs" />
+    <Compile Include="Behaviours\InternationalLicenseService.cs" />
+    <Compile Include="Behaviours\LicenseClassService.cs" />
+    <Compile Include="Behaviours\LicenseService.cs" />
+    <Compile Include="Behaviours\TestAppointmentService.cs" />
+    <Compile Include="Behaviours\TestService.cs" />
+    <Compile Include="Behaviours\UserAuthenticationService.cs" />
+    <Compile Include="Behaviours\LocalDrivingLicenseApplicationManager.cs" />
+    <Compile Include="Behaviours\PersonService.cs" />
+    <Compile Include="Interfaces\IDetainedLicenseService.cs" />
+    <Compile Include="Interfaces\IDriverService.cs" />
+    <Compile Include="Interfaces\IInternationalLicenseService.cs" />
+    <Compile Include="Interfaces\ILicenseService.cs" />
+    <Compile Include="Interfaces\ITestService.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Behaviours\TestTypeService.cs" />
+    <Compile Include="Behaviours\UserService.cs" />
+    <Compile Include="Validations\ApplicationTypeValidator.cs" />
+    <Compile Include="Validations\ApplicationValidator.cs" />
+    <Compile Include="Validations\LDLApplicationValidator.cs" />
+    <Compile Include="Validations\PersonValidator.cs" />
+    <Compile Include="Validations\TestTypeValidator.cs" />
+    <Compile Include="Validations\UserValidator.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MyDVLD_Data\MyDVLD_DAL.csproj">
+      <Project>{412b1eb1-2a39-4452-a5ee-6229299f7f08}</Project>
+      <Name>MyDVLD_DAL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MyDVLD_DTOs\MyDVLD_DTOs.csproj">
+      <Project>{59ef5694-eccf-42c8-8bb1-2fefd93d9515}</Project>
+      <Name>MyDVLD_DTOs</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
