@@ -49,7 +49,7 @@ namespace MyDVLD_DAL.StoredProcedure
 		/// <param name="testTypeTitle">Title of the test type</param>
 		/// <param name="testTypeID">ID of the test type to exclude</param>
 		/// <returns>1 if exists in another record, 0 otherwise</returns>
-		public const string IsTstExistsExcludingItself=
+		public const string IsTestExistsExcludingItself=
       "TestTypes_IsTestTypeTitleExiststExcludingItself";
 
 		/// <summary>
