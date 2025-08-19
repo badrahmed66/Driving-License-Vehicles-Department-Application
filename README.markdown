@@ -91,5 +91,5 @@ This project is primarily educational and intended for demonstration purposes. T
 Distributed under the [MIT License](LICENSE). See `LICENSE` file for more information.
 
 ## Contact
-This project is maintained by [Your Name]. For inquiries, you can reach out via:
+This project is maintained by [Ahmed Badr]. For inquiries, you can reach out via:
 - Email: [badrbadr4441@gmail.com]
