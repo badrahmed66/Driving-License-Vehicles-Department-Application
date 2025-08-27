@@ -1,8 +1,10 @@
-﻿using System;
-using System.Data;
+﻿using MyDVLD_DAL.Utility;
+using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.Data;
 using System.Data.SqlClient;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -48,8 +50,30 @@ namespace MyDVLD_DAL
 			}
 			catch (Exception e)
 			{
-				Debug.WriteLine($"Error in [LoginLogsData].[AddLog] : {e.Message}");
-				Debug.WriteLine($"[Stack Trace] : {e.StackTrace}");
+				LogFile.AddLogToFile(nameof(LoginLogsData), nameof(AddLog), e.Message, LogFile.ErrorsFile);
+
+				EventLog.WriteEntry(LogFile.eventLogSource,
+					LogFile.StringFormat(nameof(LocalDrivingLicenseApplicationDAL), nameof(AddLog), e.Message));
+			}
+		}
+
+		public static void AddUserLogin(string userName ,int userID, string path)
+		{
+			try
+			{
+				using (TextWriter ts = new StreamWriter(LogFile.UsersLogin))
+				{
+					ts.WriteLine("=====================");
+					ts.WriteLine(DateTime.Now);
+					ts.WriteLine($"User Name : {userName}");
+					ts.WriteLine($"User ID : {userID}");
+					ts.WriteLine("=====================");
+				}
+
+			}
+			catch (Exception e)
+			{
+				EventLog.WriteEntry(LogFile.eventLogSource, $"class :{nameof(LoginLogsData)} - method : {nameof(AddUserLogin)}\nmessage : Filed to add users login : {e.Message}");
 			}
 		}
 	}

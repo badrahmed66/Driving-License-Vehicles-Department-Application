@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using MyDVLD_DTO.User;
 using MyDVLD_DTOs.User;
 using MyDVLD_BLL.Validation;
+using MyDVLD_DAL.Utility;
 
 namespace MyDVLD_BLL
 {
@@ -33,6 +34,8 @@ namespace MyDVLD_BLL
 		public static void LogActivity(int userID, string userName, string activityType = "Logged In", string details = "")
 		{
 			LoginLogsData.AddLog(userID, userName, activityType, details);
+
+			LogFile.AddLogToFile(nameof(UserAuthenticationService), nameof(LogActivity), $"{userName} {activityType}", LogFile.UsersLogin);
 		}
 
 		/// <summary>

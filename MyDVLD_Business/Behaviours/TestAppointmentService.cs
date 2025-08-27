@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using static MyDVLD_DTO.TestTypeDTO;
+using MyDVLD_DAL.Utility;
 
 namespace MyDVLD_Business.Behaviours
 {
@@ -61,6 +62,7 @@ namespace MyDVLD_Business.Behaviours
 			if (newID > 0)
 			{
 				_testAppointmentInfo.TestAppointmentID = newID;
+				LogFile.AddLogToFile(nameof(TestAppointmentService), nameof(Insert), $"New Appointment ID {newID} has Added", LogFile.TestAppointments);
 				return true;
 			}
 			else

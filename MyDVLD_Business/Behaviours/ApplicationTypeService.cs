@@ -1,8 +1,10 @@
-﻿using System;
-using MyDVLD_DTO;
-using System.Collections.Generic;
+﻿using MyDVLD_BLL.Validation;
 using MyDVLD_DAL;
-using MyDVLD_BLL.Validation;
+using MyDVLD_DAL.Utility;
+using MyDVLD_DTO;
+using System;
+using System.Collections.Generic;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace MyDVLD_BLL
 {
@@ -94,6 +96,7 @@ namespace MyDVLD_BLL
 			{
 				message = "Application Type Added Successfully";
 				ApplicationTypeInfo.ID = id;
+				LogFile.AddLogToFile(nameof(ApplicationTypeService), nameof(InsertApplicationType), $"{ApplicationTypeInfo.Title} new Title of application Type has been Added", LogFile.ApplicationTypes);
 				return true;
 			}
 			else
@@ -127,6 +130,7 @@ namespace MyDVLD_BLL
 			if (ApplicationTypeDAL.Update(ApplicationTypeInfo))
 			{
 				message = "Application Type Updated Successfully";
+				LogFile.AddLogToFile(nameof(ApplicationTypeService), nameof(InsertApplicationType), $"{ApplicationTypeInfo.Title} Has Updated", LogFile.ApplicationTypes);
 				return true;
 			}
 			else

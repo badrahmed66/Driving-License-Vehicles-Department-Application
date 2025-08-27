@@ -1,6 +1,7 @@
 ﻿using MyDVLD_BLL;
 using MyDVLD_BLL.Validations;
 using MyDVLD_DAL;
+using MyDVLD_DAL.Utility;
 using MyDVLD_DTO;
 using MyDVLD_DTO.User;
 using System;
@@ -61,6 +62,8 @@ namespace MyDVLD_BLL
 			{
 				message = "Application Inserted Successfully";
 				ApplicationInfo.ApplicationID = appID;
+
+				LogFile.AddLogToFile(nameof(ApplicationService), nameof(AddApplication), $"New Application Has Added with ID ({appID} - Type : {ApplicationInfo.ApplicationTypeInfoDTO.Title})", LogFile.ApplicationsInfo);
 				return true;
 			}
 			else
@@ -86,6 +89,7 @@ namespace MyDVLD_BLL
 			if (ApplicationDAL.UpdateApplication(ApplicationInfo))
 			{
 				message = "Application Updated Successfully";
+				LogFile.AddLogToFile(nameof(ApplicationService), nameof(UpdateApplication), $"Application with ID ({ApplicationInfo.ApplicationID} - Type : {ApplicationInfo.ApplicationTypeInfoDTO.Title} Has Updated)", LogFile.ApplicationsInfo);
 				return true;
 			}
 			else
@@ -112,6 +116,7 @@ namespace MyDVLD_BLL
 			if (ApplicationDAL.DeleteApplication(appID))
 			{
 				errorMessage = "Application Deleted Successfully";
+				LogFile.AddLogToFile(nameof(ApplicationService), nameof(DeleteApplication), $"Application with ID ({appID}) Has Deleted", LogFile.ApplicationsInfo);
 				return true;
 			}
 			else
@@ -146,6 +151,7 @@ namespace MyDVLD_BLL
 		/// <returns>True if operation was successful; otherwise false.</returns>
 		public bool Cancel()
 		{
+			LogFile.AddLogToFile(nameof(ApplicationService), nameof(Cancel), $"Application with ID ({ApplicationInfo.ApplicationID}) - Type : {ApplicationInfo.ApplicationTypeInfoDTO.Title} Has Canceled", LogFile.ApplicationsInfo);
 			return ApplicationDAL.UpdateStatus(ApplicationInfo.ApplicationID, 2);
 		}
 
@@ -155,6 +161,7 @@ namespace MyDVLD_BLL
 		/// <returns>True if operation was successful; otherwise false.</returns>
 		public bool SetComplete()
 		{
+			LogFile.AddLogToFile(nameof(ApplicationService), nameof(SetComplete), $"Application with ID ({ApplicationInfo.ApplicationID})- Type : {ApplicationInfo.ApplicationTypeInfoDTO.Title} Has Completed", LogFile.ApplicationsInfo);
 			return ApplicationDAL.UpdateStatus(ApplicationInfo.ApplicationID, 3);
 		}
 
@@ -165,6 +172,7 @@ namespace MyDVLD_BLL
 		/// <returns>True if operation was successful; otherwise false.</returns>
 		public static bool SetComplete(int applicationID)
 		{
+			LogFile.AddLogToFile(nameof(ApplicationService), nameof(SetComplete), $"Application with ID ({applicationID}) Has Completed", LogFile.ApplicationsInfo);
 			return ApplicationDAL.UpdateStatus(applicationID, 3);
 		}
 

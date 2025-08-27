@@ -1,14 +1,15 @@
-﻿using System;
+﻿using MyDVLD_DAL.Mapper;
+using MyDVLD_DAL.ParameterBinder;
+using MyDVLD_DAL.StoredProcedure;
+using MyDVLD_DAL.Utility;
 using MyDVLD_DTO;
-using System.Diagnostics;
-using System.Data.SqlClient;
+using MyDVLD_DTO.User;
+using MyDVLD_DTOs.User;
+using System;
 using System.Collections.Generic;
 using System.Data;
-using MyDVLD_DAL.Mapper;
-using MyDVLD_DAL.StoredProcedure;
-using MyDVLD_DAL.ParameterBinder;
-using MyDVLD_DTOs.User;
-using MyDVLD_DTO.User;
+using System.Data.SqlClient;
+using System.Diagnostics;
 
 namespace MyDVLD_DAL
 {
@@ -18,231 +19,244 @@ namespace MyDVLD_DAL
 	/// by interacting with the database through stored procedures.
 	/// </summary>
 	public static class UserDAL
-  {
+	{
 		/// <summary>
 		/// Retrieves a filtered list of users based on the provided column and value.
 		/// </summary>
-		public static List<UserViewDTO> RetrieveWithFilter(string filterColumn = "" , string filterValue = "")
-        {
-            var users = new List<UserViewDTO>();
+		public static List<UserViewDTO> RetrieveWithFilter(string filterColumn = "", string filterValue = "")
+		{
+			var users = new List<UserViewDTO>();
 
-            var filters = new UserFilterDTO();
-            
-            if(!string.IsNullOrEmpty(filterColumn) && !string.IsNullOrEmpty(filterValue))
-            {
-                switch(filterColumn)
-                {
-                    case "Full Name":
-                        filters.FullName = filterValue;
-                        break;
+			var filters = new UserFilterDTO();
 
-                    case "User ID":
-                        if (int.TryParse(filterValue, out int id))
-                            filters.UserID = id;
-                        else
-                            return users;
-                            break;
+			if (!string.IsNullOrEmpty(filterColumn) && !string.IsNullOrEmpty(filterValue))
+			{
+				switch (filterColumn)
+				{
+					case "Full Name":
+						filters.FullName = filterValue;
+						break;
 
-                    case "Person ID":
-                        if (int.TryParse(filterValue, out int personID))
-                            filters.PersonID = personID;
-                        else
-                            return users;
-                            break;
+					case "User ID":
+						if (int.TryParse(filterValue, out int id))
+							filters.UserID = id;
+						else
+							return users;
+						break;
 
-                    case "Is Active":
-                        filters.IsActive = true;
-                        break;
+					case "Person ID":
+						if (int.TryParse(filterValue, out int personID))
+							filters.PersonID = personID;
+						else
+							return users;
+						break;
 
-                    case "User Name":
-                        filters.UserName = filterValue;
-                        break;
+					case "Is Active":
+						filters.IsActive = true;
+						break;
 
-                    default:
-                        return users;
-                }
-            }
-            try
-            {
-                using (SqlConnection conn = new SqlConnection(DataPath.ConnectionPath))
-                {
-                    conn.Open();
+					case "User Name":
+						filters.UserName = filterValue;
+						break;
 
-                    using (SqlCommand cmd = new SqlCommand(UserProcedures.RetrieveWithFilter, conn))
-                    {
-                        cmd.CommandType = CommandType.StoredProcedure;
+					default:
+						return users;
+				}
+			}
+			try
+			{
+				using (SqlConnection conn = new SqlConnection(DataPath.ConnectionPath))
+				{
+					conn.Open();
 
-                      UserParameterBinder.AddRetrieveParameters(cmd, filters);
+					using (SqlCommand cmd = new SqlCommand(UserProcedures.RetrieveWithFilter, conn))
+					{
+						cmd.CommandType = CommandType.StoredProcedure;
 
-                        using (SqlDataReader reader = cmd.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
-                                users.Add(UserMapper.ReadDTOView(reader));
-                            }
-                            return users;
-                        }
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine($"Error in [{nameof(UserDAL)}].[{nameof(RetrieveWithFilter)}] : {e.Message}");
-                return new List<UserViewDTO>();
-            }
-        }
+						UserParameterBinder.AddRetrieveParameters(cmd, filters);
+
+						using (SqlDataReader reader = cmd.ExecuteReader())
+						{
+							while (reader.Read())
+							{
+								users.Add(UserMapper.ReadDTOView(reader));
+							}
+							return users;
+						}
+					}
+				}
+			}
+			catch (Exception e)
+			{
+				EventLog.WriteEntry(LogFile.eventLogSource, LogFile.StringFormat(nameof(UserDAL), nameof(RetrieveWithFilter), e.Message));
+
+				LogFile.AddLogToFile(nameof(UserDAL), nameof(RetrieveWithFilter), e.Message, LogFile.ErrorsFile);
+				return new List<UserViewDTO>();
+			}
+		}
 
 		/// <summary>
 		/// Finds user login data by username or userID. 
 		/// Used primarily for authentication (login).
 		/// </summary>
-		public static UserLoginDTO FindUserLoginByName(string userName = null , int? userID = null)
-        {
-            try
-            {
-                using(SqlConnection con = new SqlConnection(DataPath.ConnectionPath))
-                {
-                    con.Open();
+		public static UserLoginDTO FindUserLoginByName(string userName = null, int? userID = null)
+		{
+			try
+			{
+				using (SqlConnection con = new SqlConnection(DataPath.ConnectionPath))
+				{
+					con.Open();
 
-                    using(SqlCommand cmd = new SqlCommand(UserProcedures.FindForLogin, con))
-                    {
-                        cmd.CommandType = CommandType.StoredProcedure;
+					using (SqlCommand cmd = new SqlCommand(UserProcedures.FindForLogin, con))
+					{
+						cmd.CommandType = CommandType.StoredProcedure;
 
-                        UserParameterBinder.AddUserNameparameters(cmd, userName, userID);
+						UserParameterBinder.AddUserNameparameters(cmd, userName, userID);
 
-                        using(SqlDataReader reader = cmd.ExecuteReader())
-                        {
-                            return reader.Read() ? UserMapper.GetLoginDTO(reader) : null;
-                        }
-                    }
-                }
-            }
-            catch(Exception e)
-            {
-                Debug.WriteLine($"Error in [{nameof(UserDAL)}].[{nameof(FindUserLoginByName)}] : {e.Message}");
-                return null;
-            }
-        }
+						using (SqlDataReader reader = cmd.ExecuteReader())
+						{
+							return reader.Read() ? UserMapper.GetLoginDTO(reader) : null;
+						}
+					}
+				}
+			}
+			catch (Exception e)
+			{
+				EventLog.WriteEntry(LogFile.eventLogSource, LogFile.StringFormat(nameof(UserDAL), nameof(FindUserLoginByName), e.Message));
+
+				LogFile.AddLogToFile(nameof(UserDAL), nameof(FindUserLoginByName), e.Message, LogFile.ErrorsFile);
+				return null;
+			}
+		}
 
 		/// <summary>
 		/// Finds a user by one of the provided options: UserID, UserName, or PersonID.
 		/// </summary>
-		public static UserDTO FindByUserIDorNameorPersonIDorNationalNo(int? userID = null, string userName = null, int? userPersonID = null )
-        {
-            if ((userID == null && userName == null && userPersonID == null ) || (userID != null && userName != null && userPersonID != null )) return null;
+		public static UserDTO FindByUserIDorNameorPersonIDorNationalNo(int? userID = null, string userName = null, int? userPersonID = null)
+		{
+			if ((userID == null && userName == null && userPersonID == null) || (userID != null && userName != null && userPersonID != null)) return null;
 
-            try
-            {
-                using(SqlConnection con = new SqlConnection(DataPath.ConnectionPath))
-                {
-                    con.Open();
+			try
+			{
+				using (SqlConnection con = new SqlConnection(DataPath.ConnectionPath))
+				{
+					con.Open();
 
-                    using(SqlCommand cmd = new SqlCommand(UserProcedures.FindWithOptions, con))
-                    {
-                        cmd.CommandType = CommandType.StoredProcedure;
+					using (SqlCommand cmd = new SqlCommand(UserProcedures.FindWithOptions, con))
+					{
+						cmd.CommandType = CommandType.StoredProcedure;
 
-                        UserParameterBinder.AddFindParameters(cmd,userID,userPersonID,userName);
-                        
-                        using(SqlDataReader reader = cmd.ExecuteReader())
-                        {
-                            return reader.Read() ? UserMapper.GetDTO(reader) : null;
-                        }
-                    }
-                }
+						UserParameterBinder.AddFindParameters(cmd, userID, userPersonID, userName);
 
-            }
-            catch(Exception e)
-            {
-                Debug.WriteLine($"Error in [{nameof(UserDAL)}].[{nameof(FindByUserIDorNameorPersonIDorNationalNo)}] : {e.Message}");
-                return null;
-            }
-        }
+						using (SqlDataReader reader = cmd.ExecuteReader())
+						{
+							return reader.Read() ? UserMapper.GetDTO(reader) : null;
+						}
+					}
+				}
+
+			}
+			catch (Exception e)
+			{
+				EventLog.WriteEntry(LogFile.eventLogSource, LogFile.StringFormat(nameof(UserDAL), nameof(FindByUserIDorNameorPersonIDorNationalNo), e.Message));
+
+				LogFile.AddLogToFile(nameof(UserDAL), nameof(FindByUserIDorNameorPersonIDorNationalNo), e.Message, LogFile.ErrorsFile);
+				return null;
+			}
+		}
 
 		/// <summary>
 		/// Inserts a new user into the database and returns the newly generated UserID.
 		/// </summary>
 		public static int Insert(UserLoginDTO dto)
-        {
-            try
-            {
-                using(SqlConnection con = new SqlConnection(DataPath.ConnectionPath))
-                {
-                    con.Open();
+		{
+			try
+			{
+				using (SqlConnection con = new SqlConnection(DataPath.ConnectionPath))
+				{
+					con.Open();
 
-                    using (SqlCommand cmd = new SqlCommand(UserProcedures.Add, con))
-                    {
-                        cmd.CommandType = CommandType.StoredProcedure;
+					using (SqlCommand cmd = new SqlCommand(UserProcedures.Add, con))
+					{
+						cmd.CommandType = CommandType.StoredProcedure;
 
-                        UserParameterBinder.AddInsertParameters(cmd, dto);
+						UserParameterBinder.AddInsertParameters(cmd, dto);
 
-                        object ob = cmd.ExecuteScalar();
+						object ob = cmd.ExecuteScalar();
 
-                        if (ob != null && int.TryParse(ob.ToString(), out int newID))
-                            return newID;
-                        else
-                            return -1;
-                    }
-                }
-            }
-            catch( Exception e)
-            {
-                Debug.WriteLine($"Error in [{nameof(UserDAL)}].[{nameof(Insert)}] : {e.Message}");
-                return -1;
-            }
-        }
+						if (ob != null && int.TryParse(ob.ToString(), out int newID))
+							return newID;
+						else
+							return -1;
+					}
+				}
+			}
+			catch (Exception e)
+			{
+				EventLog.WriteEntry(LogFile.eventLogSource, LogFile.StringFormat(nameof(UserDAL), nameof(Insert), e.Message));
+
+				LogFile.AddLogToFile(nameof(UserDAL), nameof(Insert), e.Message, LogFile.ErrorsFile);
+				return -1;
+			}
+		}
 
 		/// <summary>
 		/// Updates an existing user's login information.
 		/// </summary>
 		public static bool Update(UserLoginDTO dto)
-        {
-            try
-            {
-                using( SqlConnection con = new SqlConnection(DataPath.ConnectionPath))
-                {
-                    con.Open();
-                    using(SqlCommand cmd = new SqlCommand(UserProcedures.Update, con))
-                    {
-                        cmd.CommandType = CommandType.StoredProcedure;
+		{
+			try
+			{
+				using (SqlConnection con = new SqlConnection(DataPath.ConnectionPath))
+				{
+					con.Open();
+					using (SqlCommand cmd = new SqlCommand(UserProcedures.Update, con))
+					{
+						cmd.CommandType = CommandType.StoredProcedure;
 
-                        UserParameterBinder.AddUpdateParameters(cmd,dto); 
+						UserParameterBinder.AddUpdateParameters(cmd, dto);
 
-                        return Convert.ToBoolean(cmd.ExecuteNonQuery() > 0);
-                    }
-                }
-            }
-            catch (Exception e) 
-            { 
-                Debug.WriteLine($"Error in [{nameof(UserDAL)}].[{nameof(Update)}] : {e.Message}");
-                return false; 
-            }
-        }
+						return Convert.ToBoolean(cmd.ExecuteNonQuery() > 0);
+					}
+				}
+			}
+			catch (Exception e)
+			{
+				EventLog.WriteEntry(LogFile.eventLogSource, LogFile.StringFormat(nameof(UserDAL), nameof(Update), e.Message));
+
+				LogFile.AddLogToFile(nameof(UserDAL), nameof(Update), e.Message, LogFile.ErrorsFile);
+				return false;
+			}
+		}
 
 
 		/// <summary>
 		/// Deletes a user by their ID.
 		/// </summary>
 		public static bool Delete(int id)
-        {
-            try
-            {
-                using(SqlConnection con = new SqlConnection(DataPath.ConnectionPath))
-                {
-                    con.Open();
-                    using(SqlCommand cmd = new SqlCommand(UserProcedures.Delete, con))
-                    {
-                        cmd.CommandType = CommandType.StoredProcedure;
+		{
+			try
+			{
+				using (SqlConnection con = new SqlConnection(DataPath.ConnectionPath))
+				{
+					con.Open();
+					using (SqlCommand cmd = new SqlCommand(UserProcedures.Delete, con))
+					{
+						cmd.CommandType = CommandType.StoredProcedure;
 
-                        UserParameterBinder.AddUserIDParameters(cmd,id);
-                        return Convert.ToBoolean(cmd.ExecuteNonQuery() > 0);
-                    }
-                }
-            }
-            catch (Exception e) { 
-                Debug.WriteLine($"Error in [{nameof(UserDAL)}].[{nameof(Delete)}] : {e.Message}");
-                return false;
-            }
-        }
+						UserParameterBinder.AddUserIDParameters(cmd, id);
+						return Convert.ToBoolean(cmd.ExecuteNonQuery() > 0);
+					}
+				}
+			}
+			catch (Exception e)
+			{
+				EventLog.WriteEntry(LogFile.eventLogSource, LogFile.StringFormat(nameof(UserDAL), nameof(Delete), e.Message));
 
-    }
+				LogFile.AddLogToFile(nameof(UserDAL), nameof(Delete), e.Message, LogFile.ErrorsFile);
+				return false;
+			}
+		}
+
+	}
 }

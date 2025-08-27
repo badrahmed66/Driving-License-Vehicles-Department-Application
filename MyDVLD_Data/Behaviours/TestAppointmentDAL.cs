@@ -1,12 +1,13 @@
-﻿using System;
-using System.Data;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Data.SqlClient;
-using MyDVLD_DTOs.TestAppointment;
-using MyDVLD_DAL;
+﻿using MyDVLD_DAL;
 using MyDVLD_DAL.Mapper;
 using MyDVLD_DAL.ParameterBinder;
+using MyDVLD_DAL.Utility;
+using MyDVLD_DTOs.TestAppointment;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
+using System.Diagnostics;
 
 namespace MyDVLD_DAL.Behaviours
 {
@@ -41,8 +42,9 @@ namespace MyDVLD_DAL.Behaviours
 			}
 			catch (Exception e)
 			{
-				Debug.WriteLine($"Error in {nameof(TestAppointmentDAL)}.{nameof(FindByID)}");
-				Debug.WriteLine(e.Message);
+				EventLog.WriteEntry(LogFile.eventLogSource, LogFile.StringFormat(nameof(TestAppointmentDAL), nameof(FindByID), e.Message));
+
+				LogFile.AddLogToFile(nameof(TestAppointmentDAL), nameof(FindByID), e.Message, LogFile.ErrorsFile);
 				return null;
 			}
 		}
@@ -73,8 +75,9 @@ namespace MyDVLD_DAL.Behaviours
 			}
 			catch (Exception e)
 			{
-				Debug.WriteLine($"Error in {nameof(TestAppointmentDAL)}.{nameof(GetLastOne)}");
-				Debug.WriteLine(e.Message);
+				EventLog.WriteEntry(LogFile.eventLogSource, LogFile.StringFormat(nameof(TestAppointmentDAL), nameof(GetLastOne), e.Message));
+
+				LogFile.AddLogToFile(nameof(TestAppointmentDAL), nameof(GetLastOne), e.Message, LogFile.ErrorsFile);
 				return null;
 			}
 		}
@@ -109,8 +112,9 @@ namespace MyDVLD_DAL.Behaviours
 			}
 			catch (Exception e)
 			{
-				Debug.WriteLine($"Error in {nameof(TestAppointmentDAL)}.{nameof(GetAllAppointmentsForLDLApp)}");
-				Debug.WriteLine(e.Message);
+				EventLog.WriteEntry(LogFile.eventLogSource, LogFile.StringFormat(nameof(TestAppointmentDAL), nameof(GetAllAppointmentsForLDLApp), e.Message));
+
+				LogFile.AddLogToFile(nameof(TestAppointmentDAL), nameof(GetAllAppointmentsForLDLApp), e.Message, LogFile.ErrorsFile);
 				return new List<TestAppointmentDTO>();
 			}
 		}
@@ -142,8 +146,9 @@ namespace MyDVLD_DAL.Behaviours
 			}
 			catch (Exception e)
 			{
-				Debug.WriteLine($"Error in {nameof(TestAppointmentDAL)}.{nameof(Insert)}");
-				Debug.WriteLine(e.Message);
+				EventLog.WriteEntry(LogFile.eventLogSource, LogFile.StringFormat(nameof(TestAppointmentDAL), nameof(Insert), e.Message));
+
+				LogFile.AddLogToFile(nameof(TestAppointmentDAL), nameof(Insert), e.Message, LogFile.ErrorsFile);
 				return -1;
 			}
 		}
@@ -170,8 +175,9 @@ namespace MyDVLD_DAL.Behaviours
 			}
 			catch (Exception e)
 			{
-				Debug.WriteLine($"Error in {nameof(TestAppointmentDAL)}.{nameof(Update)}");
-				Debug.WriteLine(e.Message);
+				EventLog.WriteEntry(LogFile.eventLogSource, LogFile.StringFormat(nameof(TestAppointmentDAL), nameof(Update), e.Message));
+
+				LogFile.AddLogToFile(nameof(TestAppointmentDAL), nameof(Update), e.Message, LogFile.ErrorsFile);
 				return false;
 			}
 		}
@@ -207,8 +213,9 @@ namespace MyDVLD_DAL.Behaviours
 			}
 			catch (Exception e)
 			{
-				Debug.WriteLine($"Error in {nameof(TestAppointmentDAL)}.{nameof(GetTestAppointmentPerTestType)}");
-				Debug.WriteLine(e.Message);
+				EventLog.WriteEntry(LogFile.eventLogSource, LogFile.StringFormat(nameof(TestAppointmentDAL), nameof(GetTestAppointmentPerTestType), e.Message));
+
+				LogFile.AddLogToFile(nameof(TestAppointmentDAL), nameof(GetTestAppointmentPerTestType), e.Message, LogFile.ErrorsFile);
 				return null;
 			}
 		}
@@ -237,8 +244,10 @@ namespace MyDVLD_DAL.Behaviours
 			}
 			catch (Exception e)
 			{
-				Debug.WriteLine($"Error in {nameof(TestAppointmentDAL)}.{nameof(GetTestID)}");
-				Debug.WriteLine(e.Message);
+				EventLog.WriteEntry(LogFile.eventLogSource, LogFile.StringFormat(nameof(TestAppointmentDAL), nameof(GetTestID), e.Message));
+
+				LogFile.AddLogToFile(nameof(TestAppointmentDAL), nameof(GetTestID), e.Message, LogFile.ErrorsFile);
+
 				return -1;
 			}
 		}

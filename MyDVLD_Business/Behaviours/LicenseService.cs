@@ -1,10 +1,13 @@
 ﻿using MyDVLD_BLL;
 using MyDVLD_Business.Interfaces;
 using MyDVLD_DAL.Interfaces;
+using MyDVLD_DAL.Utility;
 using MyDVLD_DTO;
 using MyDVLD_DTO.User;
 using MyDVLD_DTOs;
 using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
 using static MyDVLD_DTOs.LicenseDTO;
 
@@ -52,6 +55,7 @@ namespace MyDVLD_Business.Behaviours
 		public bool DeActivateLicense(int licenseID)
 		{
 			if (licenseID <= 0) return false;
+			LogFile.AddLogToFile(nameof(LicenseService), nameof(DeActivateLicense), $"{licenseID} has Deactivated", LogFile.LicensesList);
 			return _licenseDAL.DeActivateLicense(licenseID);
 		}
 
@@ -174,6 +178,7 @@ namespace MyDVLD_Business.Behaviours
 				if (newID > 0)
 				{
 					license.LicenseID = newID;
+					LogFile.AddLogToFile(nameof(LicenseService), nameof(Save), $"New License with ID {newID} has Added", LogFile.LicensesList);
 					return true;
 				}
 				return false;

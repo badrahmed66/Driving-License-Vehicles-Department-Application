@@ -10,25 +10,30 @@ using MyDVLD_Business.Behaviours;
 using MyDVLD_DAL.Behaviours;
 using MyDVLD_DAL.Interfaces;
 using MyDVLD_Presentation.Users;
+using System.Diagnostics;
+using System.Threading;
 
 
 namespace MyDVLD_Presentation
 {
-    internal static class Program
-    {
+	internal static class Program
+	{
 
-        /// <summary>
-        /// The main entry point for the application.
-        /// </summary>
-        [STAThread]
-        static void Main()
-        {
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
+		/// <summary>
+		/// The main entry point for the application.
+		/// </summary>
+		[STAThread]
+		static void Main()
+		{
+			Application.EnableVisualStyles();
+			Application.SetCompatibleTextRenderingDefault(false);
 
-
-            // pass the container object in the form login
-            Application.Run(new FrmLoginScreen(new ServicesContainer()));
-        }
-    }
+			if (!EventLog.SourceExists("DVLD_App"))
+			{
+				EventLog.CreateEventSource("DVLD_App", "Application");
+			}
+			// pass the container object in the form login
+			Application.Run(new FrmLoginScreen(new ServicesContainer()));
+		}
+	}
 }

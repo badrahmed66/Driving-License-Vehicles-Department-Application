@@ -1,12 +1,13 @@
-﻿using MyDVLD_DAL.Interfaces;
-using MyDVLD_DTOs;
-using System;
-using System.Diagnostics;
-using System.Data;
-using MyDVLD_DAL;
-using System.Data.SqlClient;
+﻿using MyDVLD_DAL;
+using MyDVLD_DAL.Interfaces;
 using MyDVLD_DAL.Mapper;
 using MyDVLD_DAL.ParameterBinder;
+using MyDVLD_DAL.Utility;
+using MyDVLD_DTOs;
+using System;
+using System.Data;
+using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Security.Cryptography.X509Certificates;
 
 namespace MyDVLD_DAL.Behaviours
@@ -43,9 +44,12 @@ namespace MyDVLD_DAL.Behaviours
 					}
 				}
 			}
-			catch(Exception ex)
+			catch(Exception e)
 			{
-				Debug.WriteLine($"Error in {nameof(LicenseDAL)}.{nameof(DeActivateLicense)}\t Reason {ex.Message}");
+				LogFile.AddLogToFile(nameof(LicenseDAL), nameof(DeActivateLicense), e.Message, LogFile.ErrorsFile);
+
+				EventLog.WriteEntry(LogFile.eventLogSource,
+					LogFile.StringFormat(nameof(LicenseDAL), nameof(DeActivateLicense), e.Message));
 				return false;
 			}
 		}
@@ -77,7 +81,10 @@ namespace MyDVLD_DAL.Behaviours
 			}
 			catch(Exception e)
 			{
-				Debug.WriteLine($"Error in {nameof(LicenseDAL)}.{nameof(FindByLicenseID)}\t Reason {e.Message}");
+				LogFile.AddLogToFile(nameof(LicenseDAL), nameof(FindByLicenseID), e.Message, LogFile.ErrorsFile);
+
+				EventLog.WriteEntry(LogFile.eventLogSource,
+					LogFile.StringFormat(nameof(LicenseDAL), nameof(FindByLicenseID), e.Message));
 				return null;
 			}
 		}
@@ -109,7 +116,10 @@ namespace MyDVLD_DAL.Behaviours
 			}
 			catch (Exception e)
 			{
-				Debug.WriteLine($"Error in {nameof(LicenseDAL)}.{nameof(FindByDriverID)}\t Reason {e.Message}");
+				LogFile.AddLogToFile(nameof(LicenseDAL), nameof(FindByDriverID), e.Message, LogFile.ErrorsFile);
+
+				EventLog.WriteEntry(LogFile.eventLogSource,
+					LogFile.StringFormat(nameof(LicenseDAL), nameof(FindByDriverID), e.Message));
 				return null;
 			}
 		}
@@ -145,7 +155,10 @@ namespace MyDVLD_DAL.Behaviours
 			}
 			catch(Exception e)
 			{
-				Debug.WriteLine($"Error in {nameof(LicenseDAL)}.{nameof(GetActiveLicenseIDToDriver)}\t Reason {e.Message}");
+				LogFile.AddLogToFile(nameof(DriverDAL), nameof(GetActiveLicenseIDToDriver), e.Message, LogFile.ErrorsFile);
+
+				EventLog.WriteEntry(LogFile.eventLogSource,
+					LogFile.StringFormat(nameof(DriverDAL), nameof(GetActiveLicenseIDToDriver), e.Message));
 				return -1;
 			}
 		}
@@ -177,7 +190,10 @@ namespace MyDVLD_DAL.Behaviours
 			}
 			catch(Exception e)
 			{
-				Debug.WriteLine($"Error in {nameof(LicenseDAL)}.{nameof(RetrieveAll)}\t Reason {e.Message}");
+				LogFile.AddLogToFile(nameof(DriverDAL), nameof(RetrieveAll), e.Message, LogFile.ErrorsFile);
+
+				EventLog.WriteEntry(LogFile.eventLogSource,
+					LogFile.StringFormat(nameof(DriverDAL), nameof(RetrieveAll), e.Message));
 				return null;
 			}
 		}
@@ -211,7 +227,10 @@ namespace MyDVLD_DAL.Behaviours
 			}
 			catch(Exception e)
 			{
-				Debug.WriteLine($"Error in {nameof(LicenseDAL)}.{nameof(Insert)}\t Reason {e.Message}");
+				LogFile.AddLogToFile(nameof(DriverDAL), nameof(Insert), e.Message, LogFile.ErrorsFile);
+
+				EventLog.WriteEntry(LogFile.eventLogSource,
+					LogFile.StringFormat(nameof(DriverDAL), nameof(Insert), e.Message));
 				return -1;
 			}
 		}
@@ -252,7 +271,10 @@ namespace MyDVLD_DAL.Behaviours
 			}
 			catch(Exception e)
 			{
-				Debug.WriteLine($"Error in {nameof(LicenseDAL)}.{nameof(Update)}\t Reason {e.Message}");
+				LogFile.AddLogToFile(nameof(DriverDAL), nameof(Update), e.Message, LogFile.ErrorsFile);
+
+				EventLog.WriteEntry(LogFile.eventLogSource,
+					LogFile.StringFormat(nameof(DriverDAL), nameof(Update), e.Message));
 				return false;
 			}
 		}
@@ -294,7 +316,10 @@ namespace MyDVLD_DAL.Behaviours
 			}
 			catch( Exception e)
 			{
-				Debug.WriteLine($"Error in {nameof(LicenseDAL)}.{nameof(RetrieveForDriver)}\t Reason {e.Message}");
+				LogFile.AddLogToFile(nameof(DriverDAL), nameof(RetrieveForDriver), e.Message, LogFile.ErrorsFile);
+
+				EventLog.WriteEntry(LogFile.eventLogSource,
+					LogFile.StringFormat(nameof(DriverDAL), nameof(RetrieveForDriver), e.Message));
 				return null;
 			}
 
@@ -337,7 +362,10 @@ namespace MyDVLD_DAL.Behaviours
 			}
 			catch(Exception e)
 			{
-				Debug.WriteLine($"Error In {nameof(LicenseDAL)}.{nameof(GetLicensesByDriverID)}/n{e.Message}");
+				LogFile.AddLogToFile(nameof(DriverDAL), nameof(GetLicensesByDriverID), e.Message, LogFile.ErrorsFile);
+
+				EventLog.WriteEntry(LogFile.eventLogSource,
+					LogFile.StringFormat(nameof(DriverDAL), nameof(GetLicensesByDriverID), e.Message));
 				return null;
 			}
 		}

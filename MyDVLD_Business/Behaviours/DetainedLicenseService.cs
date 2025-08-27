@@ -1,6 +1,7 @@
 ﻿using MyDVLD_BLL;
 using MyDVLD_Business.Interfaces;
 using MyDVLD_DAL.Interfaces;
+using MyDVLD_DAL.Utility;
 using MyDVLD_DTOs;
 using System;
 using System.Collections.Generic;
@@ -71,6 +72,7 @@ namespace MyDVLD_Business.Behaviours
 		/// </summary>
 		public bool ReleaseDetainedLicense(int detainID, int releaseByUserID, int releaseAppID)
 		{
+			
 			return _detainedLicenseDAL.ReleaseDetainedLicense(detainID, releaseByUserID, releaseAppID);
 		}
 

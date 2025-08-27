@@ -1,6 +1,7 @@
 ﻿using MyDVLD_BLL;
 using MyDVLD_Business.Interfaces;
 using MyDVLD_DAL.Interfaces;
+using MyDVLD_DAL.Utility;
 using MyDVLD_DTO;
 using MyDVLD_DTOs;
 using System;
@@ -107,6 +108,7 @@ namespace MyDVLD_Business.Behaviours
 			if (newID > 0)
 			{
 				internationalLicenseDTO.InternationalLicenseID = newID;
+				LogFile.AddLogToFile(nameof(InternationalLicenseService), nameof(Insert), $"New International License with ID {newID} has Added", LogFile.ApplicationsInfo);
 				return true;
 			}
 			return false;
@@ -129,6 +131,7 @@ namespace MyDVLD_Business.Behaviours
 		/// <returns>True if the update was successful; otherwise, false.</returns>
 		public bool Update(InternationalLicenseDTO internationalLicenseDTO)
 		{
+			LogFile.AddLogToFile(nameof(InternationalLicenseService), nameof(Insert), $"International License with ID {internationalLicenseDTO.InternationalLicenseID} has Updated", LogFile.ApplicationsInfo);
 			return _internationalDAL.Update(internationalLicenseDTO);
 		}
 	}

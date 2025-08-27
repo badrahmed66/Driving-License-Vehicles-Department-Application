@@ -4,6 +4,7 @@ using MyDVLD_DTO;
 using System.Collections.Generic;
 using MyDVLD_DTO.Person;
 using MyDVLD_BLL.Validation;
+using MyDVLD_DAL.Utility;
 
 
 namespace MyDVLD_BLL
@@ -22,13 +23,13 @@ namespace MyDVLD_BLL
 	/// - Provide feedback messages for UI layer
 	/// </summary>
 	public class PersonService
-  {
-    private PersonDTO PersonInfo { get; set; }
+	{
+		private PersonDTO PersonInfo { get; set; }
 
-    public PersonService(PersonDTO person)
-        {
-            PersonInfo = person ?? throw new ArgumentNullException(nameof(person));
-        }
+		public PersonService(PersonDTO person)
+		{
+			PersonInfo = person ?? throw new ArgumentNullException(nameof(person));
+		}
 
 		/// <summary>
 		/// Retrieves a filtered list of people for presentation purposes.
@@ -40,10 +41,10 @@ namespace MyDVLD_BLL
 		/// Returns:
 		/// A list of <see cref="PersonViewDTO"/> objects matching the filter criteria.
 		/// </summary>
-		static public List <PersonViewDTO> RetrieveAllPeople(string filterColumn = "" , string filterValue = "")
-        {
-            return PersonDAL.RetrieveForView(filterColumn, filterValue);
-        }
+		static public List<PersonViewDTO> RetrieveAllPeople(string filterColumn = "", string filterValue = "")
+		{
+			return PersonDAL.RetrieveForView(filterColumn, filterValue);
+		}
 
 
 		/// <summary>
@@ -57,11 +58,11 @@ namespace MyDVLD_BLL
 		/// Returns:
 		/// A <see cref="PersonDTO"/> object if found, otherwise null.
 		/// </summary>
-		public static PersonDTO FindPersonByIDOrNationalNo(out string errorMessage ,int ? personID  , string nationalNo )
-        {
-            errorMessage = "";
-           return PersonDAL.Find(personID,nationalNo, out errorMessage);
-        }
+		public static PersonDTO FindPersonByIDOrNationalNo(out string errorMessage, int? personID, string nationalNo)
+		{
+			errorMessage = "";
+			return PersonDAL.Find(personID, nationalNo, out errorMessage);
+		}
 
 
 		/// <summary>
@@ -76,30 +77,31 @@ namespace MyDVLD_BLL
 		/// Returns:
 		/// True if the person was inserted successfully, otherwise false.
 		/// </summary>
-		public bool InsertPerson( out string errorMessage)
-        {
-            errorMessage = "";
+		public bool InsertPerson(out string errorMessage)
+		{
+			errorMessage = "";
 
-            if(PersonValidator.IsPersonAlreadyExists(out errorMessage,null , nationalNo: PersonInfo.NationalNo))
-            {
-                errorMessage = "this National No already Exists in the system ";
-                return false;
-            }
+			if (PersonValidator.IsPersonAlreadyExists(out errorMessage, null, nationalNo: PersonInfo.NationalNo))
+			{
+				errorMessage = "this National No already Exists in the system ";
+				return false;
+			}
 
-            int personID = PersonDAL.Insert(PersonInfo);
+			int personID = PersonDAL.Insert(PersonInfo);
 
-            if (personID > 0)
-            {
-                errorMessage = "Person Saved Successfuly";
-                PersonInfo.PersonID = personID;
-                return true;
-            }
-            else
-            {
-                errorMessage = "Person didn't Save";
-                return false;
-            }
-        }
+			if (personID > 0)
+			{
+				errorMessage = "Person Saved Successfuly";
+				PersonInfo.PersonID = personID;
+				LogFile.AddLogToFile(nameof(PersonService), nameof(InsertPerson), $"New Person with ID {personID} has Added", LogFile.SystemInfo);
+				return true;
+			}
+			else
+			{
+				errorMessage = "Person didn't Save";
+				return false;
+			}
+		}
 
 		/// <summary>
 		/// Updates an existing person's details.
@@ -114,26 +116,27 @@ namespace MyDVLD_BLL
 		/// True if the person was updated successfully, otherwise false.
 		/// </summary>
 		public bool UpdatePerson(out string errorMessage)
-        {
-            errorMessage = "";
+		{
+			errorMessage = "";
 
-            if(PersonInfo == null || PersonInfo.PersonID <= 0)
-            {
-                errorMessage = "invalid person ";
-                return false;
-            }
+			if (PersonInfo == null || PersonInfo.PersonID <= 0)
+			{
+				errorMessage = "invalid person ";
+				return false;
+			}
 
-            if (PersonDAL.Update(PersonInfo))
-            {
-                errorMessage = "Person Updated Successfuly";
-                return true;
-            }
-            else
-            {
-                errorMessage = "Person could not be Update";
-                return false;
-            }
-        }
+			if (PersonDAL.Update(PersonInfo))
+			{
+				errorMessage = "Person Updated Successfuly";
+				LogFile.AddLogToFile(nameof(PersonService), nameof(UpdatePerson), $"Person with ID {PersonInfo.PersonID} has Updated", LogFile.SystemInfo);
+				return true;
+			}
+			else
+			{
+				errorMessage = "Person could not be Update";
+				return false;
+			}
+		}
 
 		/// <summary>
 		/// Deletes a person from the system.
@@ -148,27 +151,28 @@ namespace MyDVLD_BLL
 		/// Returns:
 		/// True if the person was deleted successfully, otherwise false.
 		/// </summary>
-		public static bool DeletePerson(int personID,out string errorMessage)
-        {
-            errorMessage = "";
+		public static bool DeletePerson(int personID, out string errorMessage)
+		{
+			errorMessage = "";
 
-            if (UserValidator.IsPersonAlreadyUser(personID, null))
-            {
-                errorMessage = "Could not Delete , this person Already a user ";
-                return false ;
-            }
+			if (UserValidator.IsPersonAlreadyUser(personID, null))
+			{
+				errorMessage = "Could not Delete , this person Already a user ";
+				return false;
+			}
 
-            if (PersonDAL.Delete(personID))
-            {
-                errorMessage = "Person has been Deleted Successfuly";
-                return true;
-            }
-            else
-            {
-                errorMessage = "person has not found or Already Deleted";
-                return false;
-            }
-        }
+			if (PersonDAL.Delete(personID))
+			{
+				errorMessage = "Person has been Deleted Successfuly";
+				LogFile.AddLogToFile(nameof(PersonService), nameof(DeletePerson), $"Person with ID {personID} has Deleted", LogFile.SystemInfo);
+				return true;
+			}
+			else
+			{
+				errorMessage = "person has not found or Already Deleted";
+				return false;
+			}
+		}
 
-  }
+	}
 }

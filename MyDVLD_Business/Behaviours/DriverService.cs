@@ -3,6 +3,7 @@ using MyDVLD_DTOs;
 using System;
 using System.Data;
 using MyDVLD_DAL.Interfaces;
+using MyDVLD_DAL.Utility;
 
 namespace MyDVLD_Business.Behaviours
 {
@@ -68,12 +69,14 @@ namespace MyDVLD_Business.Behaviours
 				if (newID > 0)
 				{
 					driverDTO.DriverID = newID;
+					LogFile.AddLogToFile(nameof(DriverService), nameof(Insert), $"New Driver with ID{newID} has added in the system", LogFile.Drivers);
 					return true;
 				}
 				return false;
 			}
 			else // Update
 			{
+				LogFile.AddLogToFile(nameof(DriverService), nameof(Insert), $"Driver with ID{driverDTO.DriverID} has changed his Details", LogFile.Drivers);
 				return Update(driverDTO);
 			}
 		}

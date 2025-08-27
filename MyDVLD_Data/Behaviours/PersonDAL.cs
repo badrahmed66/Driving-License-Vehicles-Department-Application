@@ -9,6 +9,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics;
 using MyDVLD_DTOs;
+using MyDVLD_DAL.Utility;
 
 namespace MyDVLD_DAL
 {
@@ -31,7 +32,7 @@ namespace MyDVLD_DAL
 	/// to the debug output.
 	/// </summary>
 	public class PersonDAL
-    {
+	{
 
 		/// <summary>
 		/// Retrieves a filtered list of people for display in the "People" view form.
@@ -45,92 +46,96 @@ namespace MyDVLD_DAL
 		/// Returns an empty list if no matches or if the filter is invalid.
 		/// </summary>
 		public static List<PersonViewDTO> RetrieveForView(string filterColumn = "", string filterValue = "")
-        {
-            List<PersonViewDTO> peopleView = new List<PersonViewDTO>();
+		{
+			List<PersonViewDTO> peopleView = new List<PersonViewDTO>();
 
-            PersonFilterDTO filterDTO = new PersonFilterDTO();
+			PersonFilterDTO filterDTO = new PersonFilterDTO();
 
-            if (!string.IsNullOrEmpty(filterColumn) && !string.IsNullOrEmpty(filterValue))
-            {
-                switch (filterColumn)
-                {
-                    case "Person ID":
-                        {
-                            if (int.TryParse(filterValue, out int id))
-                                filterDTO.PersonID = id;
-                            else
-                                return peopleView;
-                            break;
-                        }
+			if (!string.IsNullOrEmpty(filterColumn) && !string.IsNullOrEmpty(filterValue))
+			{
+				switch (filterColumn)
+				{
+					case "Person ID":
+						{
+							if (int.TryParse(filterValue, out int id))
+								filterDTO.PersonID = id;
+							else
+								return peopleView;
+							break;
+						}
 
-                    case "National No":
-                        {
-                            filterDTO.NationalNo = filterValue;
-                            break;
-                        }
-                    case "First Name":
-                        {
-                            filterDTO.FirstName = filterValue;
-                            break;
-                        }
-                    case "Last Name":
-                        {
-                            filterDTO.LastName = filterValue;
-                            break;
-                        }
-                    case "Country":
-                        {
-                            filterDTO.Country = filterValue;
-                            break;
-                        }
-                    case "Phone":
-                        {
-                            filterDTO.Phone = filterValue;
-                            break;
-                        }
-                    case "Gender":
-                        {
-                            if (filterValue.ToLower() == "m")
-                                filterDTO.Gender = 'M';
-                            else if (filterValue.ToLower() == "f")
-                                filterDTO.Gender = 'F';
-                            else
-                                return peopleView;
-                            break;
-                        }
-                    default:
-                    return peopleView;
-                }
-            }
-            try
-            {
-                using(SqlConnection con = new SqlConnection(DataPath.ConnectionPath))
-                {
-                    con.Open();
+					case "National No":
+						{
+							filterDTO.NationalNo = filterValue;
+							break;
+						}
+					case "First Name":
+						{
+							filterDTO.FirstName = filterValue;
+							break;
+						}
+					case "Last Name":
+						{
+							filterDTO.LastName = filterValue;
+							break;
+						}
+					case "Country":
+						{
+							filterDTO.Country = filterValue;
+							break;
+						}
+					case "Phone":
+						{
+							filterDTO.Phone = filterValue;
+							break;
+						}
+					case "Gender":
+						{
+							if (filterValue.ToLower() == "m")
+								filterDTO.Gender = 'M';
+							else if (filterValue.ToLower() == "f")
+								filterDTO.Gender = 'F';
+							else
+								return peopleView;
+							break;
+						}
+					default:
+						return peopleView;
+				}
+			}
+			try
+			{
+				using (SqlConnection con = new SqlConnection(DataPath.ConnectionPath))
+				{
+					con.Open();
 
-                    using (SqlCommand cmd = new SqlCommand(PersonProcedures.RetrieveWithFiltering, con))
-                    {
-                        cmd.CommandType = CommandType.StoredProcedure;
+					using (SqlCommand cmd = new SqlCommand(PersonProcedures.RetrieveWithFiltering, con))
+					{
+						cmd.CommandType = CommandType.StoredProcedure;
 
-                        PersonParameterBinder.AddRetrieveParameters(cmd, filterDTO);
+						PersonParameterBinder.AddRetrieveParameters(cmd, filterDTO);
 
-                        using (SqlDataReader reader = cmd.ExecuteReader())
-                        {
-                            while(reader.Read())
-                             {
-                                peopleView.Add(PersonMapper.GetViewDTO(reader));
-                             }
-                        }
-                    }
-                }
-            }
-            catch(Exception e) 
-            {
-                Debug.WriteLine($"Error in [{nameof(PersonDAL)}].[{nameof(RetrieveForView)}] : {e.Message}");
-                return new List<PersonViewDTO>();
-            }
-            return peopleView;
-        }
+						using (SqlDataReader reader = cmd.ExecuteReader())
+						{
+							while (reader.Read())
+							{
+								peopleView.Add(PersonMapper.GetViewDTO(reader));
+							}
+						}
+					}
+				}
+			}
+			catch (Exception e)
+			{
+
+				EventLog.WriteEntry(LogFile.eventLogSource, LogFile.StringFormat(nameof(PersonDAL), nameof(RetrieveForView), e.Message));
+
+				LogFile.AddLogToFile(nameof(PersonDAL), nameof(RetrieveForView), e.Message,LogFile.ErrorsFile);
+
+				return new List<PersonViewDTO>();
+			}
+			return peopleView;
+		}
 
 		/// <summary>
 		/// Finds a single person record by either PersonID or NationalNo.
@@ -147,41 +152,43 @@ namespace MyDVLD_DAL
 		/// Returns:
 		/// A <see cref="PersonDTO"/> if found, otherwise null.
 		/// </summary>
-		static public PersonDTO Find( int? personID  , string nationalNo, out string errorMessage  )
-        {
-            errorMessage = "";
+		static public PersonDTO Find(int? personID, string nationalNo, out string errorMessage)
+		{
+			errorMessage = "";
 
-            if((personID.HasValue && nationalNo != null)||(personID is null && nationalNo == null))
-            {
-                errorMessage = "You Must pass only one of (persond ID ) or (natoinal no)";
-                return null;
-            }
+			if ((personID.HasValue && nationalNo != null) || (personID is null && nationalNo == null))
+			{
+				errorMessage = "You Must pass only one of (persond ID ) or (natoinal no)";
+				return null;
+			}
 
-            try
-            {
-                using(SqlConnection con = new SqlConnection(DataPath.ConnectionPath))
-                {
-                    con.Open();
+			try
+			{
+				using (SqlConnection con = new SqlConnection(DataPath.ConnectionPath))
+				{
+					con.Open();
 
-                    using (SqlCommand cmd = new SqlCommand(PersonProcedures.FindByIDOrNationalNo, con))
-                    {
-                        cmd.CommandType = CommandType.StoredProcedure;
+					using (SqlCommand cmd = new SqlCommand(PersonProcedures.FindByIDOrNationalNo, con))
+					{
+						cmd.CommandType = CommandType.StoredProcedure;
 
-                        PersonParameterBinder.AddFindParameters(cmd, personID,nationalNo);
+						PersonParameterBinder.AddFindParameters(cmd, personID, nationalNo);
 
-                        using (SqlDataReader reader = cmd.ExecuteReader())
-                        {
-                            return reader.Read() ? PersonMapper.GetDTO(reader) : null;
-                        }
-                    }
-                }
-            }
-            catch(Exception e)
-            {
-                Debug.WriteLine($"Error in [{nameof(PersonDAL)}].[{nameof(Find)}] : {e.Message}");
-                return null; 
-            }
-        }
+						using (SqlDataReader reader = cmd.ExecuteReader())
+						{
+							return reader.Read() ? PersonMapper.GetDTO(reader) : null;
+						}
+					}
+				}
+			}
+			catch (Exception e)
+			{
+				EventLog.WriteEntry(LogFile.eventLogSource, LogFile.StringFormat(nameof(PersonDAL), nameof(Find), e.Message));
+
+				LogFile.AddLogToFile(nameof(PersonDAL), nameof(Find), e.Message, LogFile.ErrorsFile);
+				return null;
+			}
+		}
 
 
 
@@ -196,31 +203,33 @@ namespace MyDVLD_DAL
 		/// Also updates the <see cref="PersonDTO.PersonID"/> property of the input object.
 		/// </summary>
 		static public int Insert(PersonDTO person)
-        {
-            try
-            {
-                using (SqlConnection con = new SqlConnection(DataPath.ConnectionPath))
-                {
-                    con.Open();
+		{
+			try
+			{
+				using (SqlConnection con = new SqlConnection(DataPath.ConnectionPath))
+				{
+					con.Open();
 
-                    using (SqlCommand cmd = new SqlCommand(PersonProcedures.Add, con))
-                    {
-                        cmd.CommandType = CommandType.StoredProcedure;
+					using (SqlCommand cmd = new SqlCommand(PersonProcedures.Add, con))
+					{
+						cmd.CommandType = CommandType.StoredProcedure;
 
-                        PersonParameterBinder.AddInsertParameters(cmd, person);
+						PersonParameterBinder.AddInsertParameters(cmd, person);
 
-                        int id = Convert.ToInt32(cmd.ExecuteScalar());
-                        person.PersonID = id;
-                        return id;
-                    }
-                }
-            }
-            catch (Exception  e)
-            {
-                Debug.WriteLine($"Error in [{nameof(PersonDAL)}].[{nameof(Insert)}] : {e.Message}");
-                return -1;
-            }
-        }
+						int id = Convert.ToInt32(cmd.ExecuteScalar());
+						person.PersonID = id;
+						return id;
+					}
+				}
+			}
+			catch (Exception e)
+			{
+				EventLog.WriteEntry(LogFile.eventLogSource, LogFile.StringFormat(nameof(PersonDAL), nameof(Insert), e.Message));
+
+				LogFile.AddLogToFile(nameof(PersonDAL), nameof(Insert), e.Message, LogFile.ErrorsFile);
+				return -1;
+			}
+		}
 
 
 
@@ -234,28 +243,30 @@ namespace MyDVLD_DAL
 		/// True if the record was updated successfully, otherwise false.
 		/// </summary>
 		static public bool Update(PersonDTO person)
-        {
-            try
-            {
-                using(SqlConnection con = new SqlConnection(DataPath.ConnectionPath))
-                {
-                    con.Open();
-                    using (SqlCommand cmd = new SqlCommand(PersonProcedures.Update, con))
-                    {
-                        cmd.CommandType = CommandType.StoredProcedure;
+		{
+			try
+			{
+				using (SqlConnection con = new SqlConnection(DataPath.ConnectionPath))
+				{
+					con.Open();
+					using (SqlCommand cmd = new SqlCommand(PersonProcedures.Update, con))
+					{
+						cmd.CommandType = CommandType.StoredProcedure;
 
-                        PersonParameterBinder.AddUpdateParameters(cmd, person);
-                     
-                        return cmd.ExecuteNonQuery() > 0;
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine($"Error in [{nameof(PersonDAL)}].[{nameof(Update)}] : {e.Message}");
-                return false;
-            }
-        }
+						PersonParameterBinder.AddUpdateParameters(cmd, person);
+
+						return cmd.ExecuteNonQuery() > 0;
+					}
+				}
+			}
+			catch (Exception e)
+			{
+				EventLog.WriteEntry(LogFile.eventLogSource, LogFile.StringFormat(nameof(PersonDAL), nameof(Update), e.Message));
+
+				LogFile.AddLogToFile(nameof(PersonDAL), nameof(Update), e.Message, LogFile.ErrorsFile);
+				return false;
+			}
+		}
 
 
 		/// <summary>
@@ -268,29 +279,31 @@ namespace MyDVLD_DAL
 		/// True if the record was deleted successfully, otherwise false.
 		/// </summary>
 		static public bool Delete(int ID)
-        {
-            try
-            {
-                using (SqlConnection con = new SqlConnection(DataPath.ConnectionPath))
-                {
-                    con.Open();
+		{
+			try
+			{
+				using (SqlConnection con = new SqlConnection(DataPath.ConnectionPath))
+				{
+					con.Open();
 
-                    using (SqlCommand cmd = new SqlCommand(PersonProcedures.Delete, con))
-                    {
-                        cmd.CommandType = CommandType.StoredProcedure;
+					using (SqlCommand cmd = new SqlCommand(PersonProcedures.Delete, con))
+					{
+						cmd.CommandType = CommandType.StoredProcedure;
 
-                        PersonParameterBinder.AddDeleteParameters(cmd, ID);
+						PersonParameterBinder.AddDeleteParameters(cmd, ID);
 
-                        return cmd.ExecuteNonQuery() > 0;
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine($"Error in [{nameof(PersonDAL)}].[{nameof(Delete)}] : {e.Message}");
-                return false;
-            }
-        }
+						return cmd.ExecuteNonQuery() > 0;
+					}
+				}
+			}
+			catch (Exception e)
+			{
+				EventLog.WriteEntry(LogFile.eventLogSource, LogFile.StringFormat(nameof(PersonDAL), nameof(Delete), e.Message));
 
-  }
+				LogFile.AddLogToFile(nameof(PersonDAL), nameof(Delete), e.Message, LogFile.ErrorsFile);
+				return false;
+			}
+		}
+
+	}
 }

@@ -100,6 +100,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Behaviours\TestTypeDAL.cs" />
     <Compile Include="Behaviours\UserDAL.cs" />
+    <Compile Include="Utility\LogFile.cs" />
     <Compile Include="Validation\ApplicationTypeDALValidator.cs" />
     <Compile Include="Validation\ApplicationDALValidator.cs" />
     <Compile Include="Validation\LDLApplicationDALValidator.cs" />
@@ -113,6 +114,5 @@
       <Name>MyDVLD_DTOs</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

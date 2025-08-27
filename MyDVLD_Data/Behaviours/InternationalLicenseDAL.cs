@@ -1,14 +1,15 @@
 ﻿using MyDVLD_DAL.Interfaces;
+using MyDVLD_Data.Mapper;
+using MyDVLD_Data.ParameterBinder;
+using MyDVLD_DAL.Utility;
+using MyDVLD_DTOs;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
-using System.Diagnostics;
-using System.Data.SqlClient;
-using MyDVLD_DTOs;
-using MyDVLD_Data.Mapper;
-using MyDVLD_Data.ParameterBinder;
 
 namespace MyDVLD_DAL.Behaviours
 {
@@ -25,13 +26,12 @@ namespace MyDVLD_DAL.Behaviours
 		public DataTable Retrieve()
 		{
 			string query = @"select I.InternationalLicenseID 
-, (People.FirstName + ' ' + People.SecondName + ' ' + ISNULL(People.ThirdName,'') + ' ' + People.LastName) As FullName, I.IssueDate , I.ExpirationDate , I.DriverID , I.IssuedUsingLocalLicenseID , I.ApplicationID ,
-I.IsActive , Users.UserName as ByUserName
-
-from InternationalLicenses as I
-join Drivers on I.DriverID = Drivers.DriverID
-join People on Drivers.PersonID = People.PersonID
-join Users on UserID = I.CreatedByUserID";
+										, (People.FirstName + ' ' + People.SecondName + ' ' + ISNULL(People.ThirdName,'') + ' ' + People.LastName) As FullName, I.IssueDate , I.ExpirationDate , I.DriverID , I.IssuedUsingLocalLicenseID , I.ApplicationID ,
+											I.IsActive , Users.UserName as ByUserName
+											from InternationalLicenses as I
+											join Drivers on I.DriverID = Drivers.DriverID
+											join People on Drivers.PersonID = People.PersonID
+											join Users on UserID = I.CreatedByUserID";
 
 			try
 			{
@@ -52,9 +52,13 @@ join Users on UserID = I.CreatedByUserID";
 					}
 				}
 			}
-			catch (Exception e)
+			catch (Exception ex)
 			{
-				Debug.WriteLine($"Error in {nameof(InternationalLicenseDAL)}.{nameof(Retrieve)}\n{nameof(e.Message)}");
+				LogFile.AddLogToFile(nameof(InternationalLicenseDAL), nameof(Retrieve), ex.Message, LogFile.ErrorsFile);
+
+				EventLog.WriteEntry(LogFile.eventLogSource, 
+					LogFile.StringFormat(nameof(InternationalLicenseDAL), nameof(Retrieve), ex.Message));
+
 				return null;
 			}
 		}
@@ -74,23 +78,26 @@ join Users on UserID = I.CreatedByUserID";
 											order by ExpirationDate desc";
 			try
 			{
-				using(SqlConnection con = new SqlConnection(DataPath.ConnectionPath))
+				using (SqlConnection con = new SqlConnection(DataPath.ConnectionPath))
 				{
-					con.Open(); 
-					using(SqlCommand cmd = new SqlCommand(query, con))
+					con.Open();
+					using (SqlCommand cmd = new SqlCommand(query, con))
 					{
 						cmd.Parameters.Add("@DriverID", SqlDbType.Int).Value = driverID;
 
-						using(SqlDataReader r = cmd.ExecuteReader())
+						using (SqlDataReader r = cmd.ExecuteReader())
 						{
 							return r.Read() ? InternationalLicenseMapper.GetDTO(r) : null;
 						}
 					}
 				}
 			}
-			catch(Exception e)
+			catch (Exception ex)
 			{
-				Debug.WriteLine($"Error in {nameof(InternationalLicenseDAL)}.{nameof(FindByDriverID)}\n{nameof(e.Message)}");
+				LogFile.AddLogToFile(nameof(InternationalLicenseDAL), nameof(FindByDriverID), ex.Message, LogFile.ErrorsFile);
+
+				EventLog.WriteEntry(LogFile.eventLogSource,
+					LogFile.StringFormat(nameof(InternationalLicenseDAL), nameof(FindByDriverID), ex.Message));
 				return null;
 			}
 		}
@@ -109,14 +116,14 @@ join Users on UserID = I.CreatedByUserID";
 
 			try
 			{
-				using(SqlConnection con = new SqlConnection(DataPath.ConnectionPath))
+				using (SqlConnection con = new SqlConnection(DataPath.ConnectionPath))
 				{
 					con.Open();
 
-					using(SqlCommand cmd = new SqlCommand(query , con))
+					using (SqlCommand cmd = new SqlCommand(query, con))
 					{
 						cmd.Parameters.Add("@DriverID", SqlDbType.Int).Value = driverID;
-						using(SqlDataReader r = cmd.ExecuteReader())
+						using (SqlDataReader r = cmd.ExecuteReader())
 						{
 							DataTable dt = new DataTable();
 							if (r.HasRows)
@@ -127,9 +134,12 @@ join Users on UserID = I.CreatedByUserID";
 					}
 				}
 			}
-			catch(Exception e)
+			catch (Exception ex)
 			{
-				Debug.WriteLine($"Error in {nameof(InternationalLicenseDAL)}.{nameof(RetrieveAll)}\n{nameof(e.Message)}");
+				LogFile.AddLogToFile(nameof(InternationalLicenseDAL), nameof(RetrieveAll), ex.Message, LogFile.ErrorsFile);
+
+				EventLog.WriteEntry(LogFile.eventLogSource,
+					LogFile.StringFormat(nameof(InternationalLicenseDAL), nameof(RetrieveAll), ex.Message));
 				return null;
 			}
 		}
@@ -149,23 +159,26 @@ join Users on UserID = I.CreatedByUserID";
 												order by ExpirationDate desc";
 			try
 			{
-				using(SqlConnection con = new SqlConnection(DataPath.ConnectionPath))
+				using (SqlConnection con = new SqlConnection(DataPath.ConnectionPath))
 				{
 					con.Open();
 					using (SqlCommand cmd = new SqlCommand(query, con))
 					{
-						cmd.Parameters.Add("@InternationalLicenseID",SqlDbType.Int).Value = id;
+						cmd.Parameters.Add("@InternationalLicenseID", SqlDbType.Int).Value = id;
 
-						using(SqlDataReader r = cmd.ExecuteReader())
+						using (SqlDataReader r = cmd.ExecuteReader())
 						{
 							return r.Read() ? InternationalLicenseMapper.GetDTO(r) : null;
 						}
 					}
 				}
 			}
-			catch(Exception e)
+			catch (Exception ex)
 			{
-				Debug.WriteLine($"Error in {nameof(InternationalLicenseDAL)}.{nameof(FindByInternationalID)}\n{nameof(e.Message)}");
+				LogFile.AddLogToFile(nameof(InternationalLicenseDAL), nameof(FindByInternationalID), ex.Message, LogFile.ErrorsFile);
+
+				EventLog.WriteEntry(LogFile.eventLogSource,
+					LogFile.StringFormat(nameof(InternationalLicenseDAL), nameof(FindByInternationalID), ex.Message));
 				return null;
 			}
 		}
@@ -193,11 +206,11 @@ join Users on UserID = I.CreatedByUserID";
 
 			try
 			{
-				using(SqlConnection con = new SqlConnection(DataPath.ConnectionPath))
+				using (SqlConnection con = new SqlConnection(DataPath.ConnectionPath))
 				{
 					con.Open();
 
-					using(SqlCommand cmd = new SqlCommand(query, con))
+					using (SqlCommand cmd = new SqlCommand(query, con))
 					{
 						// send the parameters to the command object
 						//InternationalLicenseBinder.Insert(cmd, dto);
@@ -213,9 +226,12 @@ join Users on UserID = I.CreatedByUserID";
 					}
 				}
 			}
-			catch(Exception e)
+			catch (Exception ex)
 			{
-				Debug.WriteLine($"Error in {nameof(InternationalLicenseDAL)}.{nameof(Insert)}\n{nameof(e.Message)}");
+				LogFile.AddLogToFile(nameof(InternationalLicenseDAL), nameof(Insert), ex.Message, LogFile.ErrorsFile);
+
+				EventLog.WriteEntry(LogFile.eventLogSource,
+					LogFile.StringFormat(nameof(InternationalLicenseDAL), nameof(Insert), ex.Message));
 				return -1;
 			}
 		}
@@ -239,11 +255,11 @@ join Users on UserID = I.CreatedByUserID";
 											WHERE InternationalLicenseID = @InternationalLicenseID";
 			try
 			{
-				using(SqlConnection con = new SqlConnection(DataPath.ConnectionPath))
+				using (SqlConnection con = new SqlConnection(DataPath.ConnectionPath))
 				{
 					con.Open();
 
-					using(SqlCommand cmd = new SqlCommand(query , con))
+					using (SqlCommand cmd = new SqlCommand(query, con))
 					{
 						// send the parameters to the command object
 						InternationalLicenseBinder.Update(cmd, dto);
@@ -253,9 +269,12 @@ join Users on UserID = I.CreatedByUserID";
 					}
 				}
 			}
-			catch (Exception e)
+			catch (Exception ex)
 			{
-				Debug.WriteLine($"Error in {nameof(InternationalLicenseDAL)}.{nameof(Update)}\n{nameof(e.Message)}");
+				LogFile.AddLogToFile(nameof(InternationalLicenseDAL), nameof(Update), ex.Message, LogFile.ErrorsFile);
+
+				EventLog.WriteEntry(LogFile.eventLogSource,
+					LogFile.StringFormat(nameof(InternationalLicenseDAL), nameof(Update), ex.Message));
 				return false;
 			}
 		}
@@ -275,20 +294,23 @@ join Users on UserID = I.CreatedByUserID";
 											ORDER BY ExpirationDate desc";
 			try
 			{
-				using(SqlConnection con = new SqlConnection(DataPath.ConnectionPath))
+				using (SqlConnection con = new SqlConnection(DataPath.ConnectionPath))
 				{
 					con.Open();
-					using(SqlCommand cmd = new SqlCommand(query, con))
+					using (SqlCommand cmd = new SqlCommand(query, con))
 					{
-						cmd.Parameters.Add("@DriverID",SqlDbType.Int).Value = driverID;
+						cmd.Parameters.Add("@DriverID", SqlDbType.Int).Value = driverID;
 
-						return Convert.ToInt32(cmd.ExecuteScalar()??-1);
+						return Convert.ToInt32(cmd.ExecuteScalar() ?? -1);
 					}
 				}
 			}
-			catch(Exception e)
+			catch (Exception ex)
 			{
-				Debug.WriteLine($"Error in {nameof(InternationalLicenseDAL)}.{nameof(GetActiveInternationalLicenseID)}\n{nameof(e.Message)}");
+				LogFile.AddLogToFile(nameof(InternationalLicenseDAL), nameof(GetActiveInternationalLicenseID), ex.Message, LogFile.ErrorsFile);
+
+				EventLog.WriteEntry(LogFile.eventLogSource,
+					LogFile.StringFormat(nameof(InternationalLicenseDAL), nameof(GetActiveInternationalLicenseID), ex.Message));
 				return -1;
 			}
 		}

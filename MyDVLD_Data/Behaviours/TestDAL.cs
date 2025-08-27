@@ -1,12 +1,13 @@
-﻿using System;
+﻿using MyDVLD_DAL.Interfaces;
+using MyDVLD_DAL.Mapper;
+using MyDVLD_DAL.ParameterBinder;
+using MyDVLD_DAL.StoredProcedure;
+using MyDVLD_DAL.Utility;
 using MyDVLD_DTOs;
-using System.Diagnostics;
+using System;
 using System.Data;
 using System.Data.SqlClient;
-using MyDVLD_DAL.StoredProcedure;
-using MyDVLD_DAL.ParameterBinder;
-using MyDVLD_DAL.Mapper;
-using MyDVLD_DAL.Interfaces;
+using System.Diagnostics;
 
 namespace MyDVLD_DAL.Behaviours
 {
@@ -43,7 +44,9 @@ namespace MyDVLD_DAL.Behaviours
 			}
 			catch (Exception e)
 			{
-				Debug.WriteLine($"Error in {nameof(TestDAL)}.{nameof(GetLastTestInfo)} \nError is : {e}");
+				EventLog.WriteEntry(LogFile.eventLogSource, LogFile.StringFormat(nameof(TestDAL), nameof(GetLastTestInfo), e.Message));
+
+				LogFile.AddLogToFile(nameof(TestDAL), nameof(GetLastTestInfo), e.Message, LogFile.ErrorsFile);
 				return null;
 			}
 		}
@@ -75,7 +78,9 @@ namespace MyDVLD_DAL.Behaviours
 			}
 			catch (Exception e)
 			{
-				Debug.WriteLine($"Error in {nameof(TestDAL)}.{nameof(RetrieveTests)} \nError is : {e}");
+				EventLog.WriteEntry(LogFile.eventLogSource, LogFile.StringFormat(nameof(TestDAL), nameof(RetrieveTests), e.Message));
+
+				LogFile.AddLogToFile(nameof(TestDAL), nameof(RetrieveTests), e.Message, LogFile.ErrorsFile);
 				return null;
 			}
 		}
@@ -105,7 +110,9 @@ namespace MyDVLD_DAL.Behaviours
 			}
 			catch (Exception e)
 			{
-				Debug.WriteLine($"Error in {nameof(TestDAL)}.{nameof(FindByID)} \nError is : {e}");
+				EventLog.WriteEntry(LogFile.eventLogSource, LogFile.StringFormat(nameof(TestDAL), nameof(FindByID), e.Message));
+
+				LogFile.AddLogToFile(nameof(TestDAL), nameof(FindByID), e.Message, LogFile.ErrorsFile);
 				return null;
 			}
 		}
@@ -132,7 +139,9 @@ namespace MyDVLD_DAL.Behaviours
 			}
 			catch (Exception e)
 			{
-				Debug.WriteLine($"Error in {nameof(TestDAL)}.{nameof(Insert)} \nError is : {e}");
+				EventLog.WriteEntry(LogFile.eventLogSource, LogFile.StringFormat(nameof(TestDAL), nameof(Insert), e.Message));
+
+				LogFile.AddLogToFile(nameof(TestDAL), nameof(Insert), e.Message, LogFile.ErrorsFile);
 				return -1;
 			}
 		}
@@ -159,7 +168,9 @@ namespace MyDVLD_DAL.Behaviours
 			}
 			catch (Exception e)
 			{
-				Debug.WriteLine($"Error in {nameof(TestDAL)}.{nameof(Update)} \nError is : {e}");
+				EventLog.WriteEntry(LogFile.eventLogSource, LogFile.StringFormat(nameof(TestDAL), nameof(Update), e.Message));
+
+				LogFile.AddLogToFile(nameof(TestDAL), nameof(Update), e.Message, LogFile.ErrorsFile);
 				return false;
 			}
 		}
@@ -187,7 +198,9 @@ namespace MyDVLD_DAL.Behaviours
 			}
 			catch (Exception e)
 			{
-				Debug.WriteLine($"Error in {nameof(TestDAL)}.{nameof(CountPassedTests)} \nError is : {e}");
+				EventLog.WriteEntry(LogFile.eventLogSource, LogFile.StringFormat(nameof(TestDAL), nameof(CountPassedTests), e.Message));
+
+				LogFile.AddLogToFile(nameof(TestDAL), nameof(CountPassedTests), e.Message, LogFile.ErrorsFile);
 				return 0;
 			}
 		}

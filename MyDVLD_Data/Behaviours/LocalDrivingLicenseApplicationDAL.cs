@@ -1,13 +1,15 @@
-﻿using System;
-using System.Diagnostics;
+﻿using MyDVLD_DAL.Behaviours;
+using MyDVLD_DAL.Mapper;
+using MyDVLD_DAL.ParameterBinder;
+using MyDVLD_DAL.StoredProcedure;
+using MyDVLD_DAL.Utility;
+using MyDVLD_DTO;
+using MyDVLD_DTOs.LocalDrivingLicenseApp;
+using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Collections.Generic;
-using MyDVLD_DTO;
-using MyDVLD_DAL.Mapper;
-using MyDVLD_DAL.StoredProcedure;
-using MyDVLD_DAL.ParameterBinder;
-using MyDVLD_DTOs.LocalDrivingLicenseApp;
+using System.Diagnostics;
 
 namespace MyDVLD_DAL
 {
@@ -93,7 +95,10 @@ namespace MyDVLD_DAL
 			}
 			catch (Exception e)
 			{
-				Debug.WriteLine($"Error in : [{nameof(LocalDrivingLicenseApplicationDAL)}].[{nameof(RetrieveLDLApplicationsWithFilter)}] : {e.Message}");
+				LogFile.AddLogToFile(nameof(LocalDrivingLicenseApplicationDAL), nameof(RetrieveLDLApplicationsWithFilter), e.Message, LogFile.ErrorsFile);
+
+				EventLog.WriteEntry(LogFile.eventLogSource,
+					LogFile.StringFormat(nameof(LocalDrivingLicenseApplicationDAL), nameof(RetrieveLDLApplicationsWithFilter), e.Message));
 				return new List<LocalDrivingLicenseApplicationViewDTO>();
 			}
 		}
@@ -126,7 +131,11 @@ namespace MyDVLD_DAL
 			}
 			catch (Exception e)
 			{
-				Debug.WriteLine($"Error in [{nameof(LocalDrivingLicenseApplicationDAL)}].[{nameof(InsertLDLApplication)}] : {e.Message}");
+
+				LogFile.AddLogToFile(nameof(LocalDrivingLicenseApplicationDAL), nameof(InsertLDLApplication), e.Message, LogFile.ErrorsFile);
+
+				EventLog.WriteEntry(LogFile.eventLogSource,
+					LogFile.StringFormat(nameof(LocalDrivingLicenseApplicationDAL), nameof(InsertLDLApplication), e.Message));
 				return -1;
 			}
 		}
@@ -154,7 +163,11 @@ namespace MyDVLD_DAL
 			}
 			catch (Exception e)
 			{
-				Debug.WriteLine($"Error in [{nameof(LocalDrivingLicenseApplicationDAL)}].[{nameof(UpdateLDLApplication)}] : {e.Message}");
+
+				LogFile.AddLogToFile(nameof(LocalDrivingLicenseApplicationDAL), nameof(UpdateLDLApplication), e.Message, LogFile.ErrorsFile);
+
+				EventLog.WriteEntry(LogFile.eventLogSource,
+					LogFile.StringFormat(nameof(LocalDrivingLicenseApplicationDAL), nameof(UpdateLDLApplication), e.Message));
 				return false;
 			}
 		}
@@ -180,7 +193,10 @@ namespace MyDVLD_DAL
 			}
 			catch (Exception e)
 			{
-				Debug.WriteLine($"Error in [{nameof(LocalDrivingLicenseApplicationDAL)}].[{nameof(DeleteLDLApplication)}] : {e.Message}");
+				LogFile.AddLogToFile(nameof(LocalDrivingLicenseApplicationDAL), nameof(DeleteLDLApplication), e.Message, LogFile.ErrorsFile);
+
+				EventLog.WriteEntry(LogFile.eventLogSource,
+					LogFile.StringFormat(nameof(LocalDrivingLicenseApplicationDAL), nameof(DeleteLDLApplication), e.Message));
 				return false;
 			}
 		}
@@ -209,7 +225,10 @@ namespace MyDVLD_DAL
 			}
 			catch (Exception e)
 			{
-				Debug.WriteLine($"Error in [{nameof(LocalDrivingLicenseApplicationDAL)}].[{nameof(FindLDLApplicationByLDLApplicationIDorApplicationID)}] : {e.Message}");
+				LogFile.AddLogToFile(nameof(LocalDrivingLicenseApplicationDAL), nameof(FindLDLApplicationByLDLApplicationIDorApplicationID), e.Message, LogFile.ErrorsFile);
+
+				EventLog.WriteEntry(LogFile.eventLogSource,
+					LogFile.StringFormat(nameof(LocalDrivingLicenseApplicationDAL), nameof(FindLDLApplicationByLDLApplicationIDorApplicationID), e.Message));
 				return null;
 			}
 		}
@@ -234,8 +253,10 @@ namespace MyDVLD_DAL
 			}
 			catch (Exception e)
 			{
-				Debug.WriteLine($"Error IN\n{nameof(LocalDrivingLicenseApplicationDAL)}.{nameof(HasPassedTest)}");
-				Debug.WriteLine($"Error Is : {e.Message}");
+				LogFile.AddLogToFile(nameof(LocalDrivingLicenseApplicationDAL), nameof(HasPassedTest), e.Message, LogFile.ErrorsFile);
+
+				EventLog.WriteEntry(LogFile.eventLogSource,
+					LogFile.StringFormat(nameof(LocalDrivingLicenseApplicationDAL), nameof(HasPassedTest), e.Message));
 				return false;
 			}
 		}
@@ -260,8 +281,10 @@ namespace MyDVLD_DAL
 			}
 			catch (Exception e)
 			{
-				Debug.WriteLine($"Error IN\n{nameof(LocalDrivingLicenseApplicationDAL)}.{nameof(HasAttendedTest)}");
-				Debug.WriteLine($"Error Is : {e.Message}");
+				LogFile.AddLogToFile(nameof(LocalDrivingLicenseApplicationDAL), nameof(HasAttendedTest), e.Message, LogFile.ErrorsFile);
+
+				EventLog.WriteEntry(LogFile.eventLogSource,
+					LogFile.StringFormat(nameof(LocalDrivingLicenseApplicationDAL), nameof(HasAttendedTest), e.Message));
 				return false;
 			}
 		}
@@ -287,8 +310,10 @@ namespace MyDVLD_DAL
 			}
 			catch (Exception e)
 			{
-				Debug.WriteLine($"Error IN\n{nameof(LocalDrivingLicenseApplicationDAL)}.{nameof(HasActiveScheduleAppointment)}");
-				Debug.WriteLine($"Error Is : {e.Message}");
+				LogFile.AddLogToFile(nameof(LocalDrivingLicenseApplicationDAL), nameof(HasActiveScheduleAppointment), e.Message, LogFile.ErrorsFile);
+
+				EventLog.WriteEntry(LogFile.eventLogSource,
+					LogFile.StringFormat(nameof(LocalDrivingLicenseApplicationDAL), nameof(HasActiveScheduleAppointment), e.Message));
 				return false;
 			}
 		}
@@ -313,8 +338,10 @@ namespace MyDVLD_DAL
 			}
 			catch (Exception e)
 			{
-				Debug.WriteLine($"Error IN\n{nameof(LocalDrivingLicenseApplicationDAL)}.{nameof(TotalTrailsTests)}");
-				Debug.WriteLine($"Error Is : {e.Message}");
+				LogFile.AddLogToFile(nameof(LocalDrivingLicenseApplicationDAL), nameof(TotalTrailsTests), e.Message, LogFile.ErrorsFile);
+
+				EventLog.WriteEntry(LogFile.eventLogSource,
+					LogFile.StringFormat(nameof(LocalDrivingLicenseApplicationDAL), nameof(TotalTrailsTests), e.Message));
 				return 0;
 			}
 		}

@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MyDVLD_DAL.ParameterBinder;
+using MyDVLD_DAL.Utility;
 
 namespace MyDVLD_DAL.Behaviours
 {
@@ -29,23 +30,26 @@ namespace MyDVLD_DAL.Behaviours
 
 			try
 			{
-				using(SqlConnection con = new SqlConnection(DataPath.ConnectionPath))
+				using (SqlConnection con = new SqlConnection(DataPath.ConnectionPath))
 				{
 					con.Open();
-					using(SqlCommand cmd = new SqlCommand(query , con))
+					using (SqlCommand cmd = new SqlCommand(query, con))
 					{
-						cmd.Parameters.Add("@DetainID",SqlDbType.Int).Value = detainID;
+						cmd.Parameters.Add("@DetainID", SqlDbType.Int).Value = detainID;
 
-						using(SqlDataReader r = cmd.ExecuteReader())
+						using (SqlDataReader r = cmd.ExecuteReader())
 						{
 							return r.Read() ? DetainedLicenseMapper.GetDTO(r) : null;
 						}
 					}
 				}
 			}
-			catch(Exception e)
+			catch (Exception e)
 			{
-				Debug.WriteLine($"Error In {nameof(DetainedLicenseDAL)}.{nameof(GetDetainedLicenseByID)}\n{nameof(e.Message)}");
+				EventLog.WriteEntry(LogFile.eventLogSource, LogFile.StringFormat(nameof(DetainedLicenseDAL), nameof(GetDetainedLicenseByID), e.Message));
+
+				LogFile.AddLogToFile(nameof(DetainedLicenseDAL), nameof(GetDetainedLicenseByID), e.Message, LogFile.ErrorsFile);
+
 				return null;
 			}
 		}
@@ -61,22 +65,24 @@ namespace MyDVLD_DAL.Behaviours
 
 			try
 			{
-				using(SqlConnection con  = new SqlConnection(DataPath.ConnectionPath))
+				using (SqlConnection con = new SqlConnection(DataPath.ConnectionPath))
 				{
 					con.Open();
-					using(SqlCommand cmd = new SqlCommand(query , con))
+					using (SqlCommand cmd = new SqlCommand(query, con))
 					{
-						cmd.Parameters.Add("@LicenseID",SqlDbType.Int).Value = licenseID;
-						using(SqlDataReader r = cmd.ExecuteReader())
+						cmd.Parameters.Add("@LicenseID", SqlDbType.Int).Value = licenseID;
+						using (SqlDataReader r = cmd.ExecuteReader())
 						{
 							return r.Read() ? DetainedLicenseMapper.GetDTO(r) : null;
 						}
 					}
 				}
 			}
-			catch(Exception e)
+			catch (Exception e)
 			{
-				Debug.WriteLine($"Error In {nameof(DetainedLicenseDAL)}.{nameof(GetDetainedLicenseByLicenseID)}\n{nameof(e.Message)}");
+				EventLog.WriteEntry(LogFile.eventLogSource, LogFile.StringFormat(nameof(DetainedLicenseDAL), nameof(GetDetainedLicenseByLicenseID), e.Message));
+
+				LogFile.AddLogToFile(nameof(DetainedLicenseDAL), nameof(GetDetainedLicenseByLicenseID), e.Message, LogFile.ErrorsFile);
 				return null;
 			}
 		}
@@ -98,10 +104,10 @@ namespace MyDVLD_DAL.Behaviours
 
 			try
 			{
-				using(SqlConnection con = new SqlConnection(DataPath.ConnectionPath))
+				using (SqlConnection con = new SqlConnection(DataPath.ConnectionPath))
 				{
 					con.Open();
-					using(SqlCommand cmd = new SqlCommand(query , con))
+					using (SqlCommand cmd = new SqlCommand(query, con))
 					{
 						// send the parameters from outer class
 						DetainedLicenseBinder.InsertParameters(cmd, detainedLicense);
@@ -110,9 +116,11 @@ namespace MyDVLD_DAL.Behaviours
 					}
 				}
 			}
-			catch(Exception e)
+			catch (Exception e)
 			{
-				Debug.WriteLine($"Error In {nameof(DetainedLicenseDAL)}.{nameof(Insert)}\n{nameof(e.Message)}");
+				EventLog.WriteEntry(LogFile.eventLogSource, LogFile.StringFormat(nameof(DetainedLicenseDAL), nameof(Insert), e.Message));
+
+				LogFile.AddLogToFile(nameof(DetainedLicenseDAL), nameof(Insert), e.Message, LogFile.ErrorsFile);
 				return -1;
 			}
 		}
@@ -129,21 +137,22 @@ namespace MyDVLD_DAL.Behaviours
 											WHERE LicenseID = @LicenseID AND IsRelease = 0";
 			try
 			{
-				using(SqlConnection con = new SqlConnection(DataPath.ConnectionPath))
+				using (SqlConnection con = new SqlConnection(DataPath.ConnectionPath))
 				{
 					con.Open();
-					using(SqlCommand cmd = new SqlCommand(query , con))
+					using (SqlCommand cmd = new SqlCommand(query, con))
 					{
-						cmd.Parameters.Add("@LicenseID",SqlDbType.Int).Value = licenseID;
+						cmd.Parameters.Add("@LicenseID", SqlDbType.Int).Value = licenseID;
 
 						return Convert.ToBoolean(cmd.ExecuteScalar() ?? false);
 					}
 				}
 			}
-			catch(Exception e)
+			catch (Exception e)
 			{
-				Debug.WriteLine($"Error In {nameof(DetainedLicenseDAL)}.{nameof(IsLicenseDetained)}\n{nameof(e.Message)}");
+				EventLog.WriteEntry(LogFile.eventLogSource, LogFile.StringFormat(nameof(DetainedLicenseDAL), nameof(IsLicenseDetained), e.Message));
 
+				LogFile.AddLogToFile(nameof(DetainedLicenseDAL), nameof(IsLicenseDetained), e.Message, LogFile.ErrorsFile);
 				return false;
 			}
 		}
@@ -168,22 +177,24 @@ namespace MyDVLD_DAL.Behaviours
 
 			try
 			{
-				using(SqlConnection con = new SqlConnection(DataPath.ConnectionPath))
+				using (SqlConnection con = new SqlConnection(DataPath.ConnectionPath))
 				{
 					con.Open();
-					using(SqlCommand cmd = new SqlCommand(query , con))
+					using (SqlCommand cmd = new SqlCommand(query, con))
 					{
-						cmd.Parameters.Add("@DetainID",SqlDbType.Int).Value = detainID;
+						cmd.Parameters.Add("@DetainID", SqlDbType.Int).Value = detainID;
 						cmd.Parameters.Add("@ReleasedByUserID", SqlDbType.Int).Value = releaseByUserID;
-						cmd.Parameters.Add("@ReleaseApplicationID",SqlDbType.Int).Value = releaseApplicationID;
+						cmd.Parameters.Add("@ReleaseApplicationID", SqlDbType.Int).Value = releaseApplicationID;
 
 						return Convert.ToBoolean(cmd.ExecuteNonQuery());
 					}
 				}
 			}
-			catch(Exception e)
+			catch (Exception e)
 			{
-				Debug.WriteLine($"Error In {nameof(DetainedLicenseDAL)}.{nameof(ReleaseDetainedLicense)}\n{nameof(e.Message)}");
+				EventLog.WriteEntry(LogFile.eventLogSource, LogFile.StringFormat(nameof(DetainedLicenseDAL), nameof(ReleaseDetainedLicense), e.Message));
+
+				LogFile.AddLogToFile(nameof(DetainedLicenseDAL), nameof(ReleaseDetainedLicense), e.Message, LogFile.ErrorsFile);
 
 				return false;
 			}
@@ -199,15 +210,15 @@ namespace MyDVLD_DAL.Behaviours
 
 			try
 			{
-				using(SqlConnection con = new SqlConnection(DataPath.ConnectionPath))
+				using (SqlConnection con = new SqlConnection(DataPath.ConnectionPath))
 				{
 					con.Open();
 
-					using(SqlCommand cmd = new SqlCommand(query , con))
+					using (SqlCommand cmd = new SqlCommand(query, con))
 					{
 						DataTable dt = new DataTable();
 
-						using(SqlDataReader r = cmd.ExecuteReader())
+						using (SqlDataReader r = cmd.ExecuteReader())
 						{
 							if (r.HasRows)
 								dt.Load(r);
@@ -217,9 +228,11 @@ namespace MyDVLD_DAL.Behaviours
 					}
 				}
 			}
-			catch(Exception e)
+			catch (Exception e)
 			{
-				Debug.WriteLine($"Error In {nameof(DetainedLicenseDAL)}.{nameof(RetrieveAll)}\n{nameof(e.Message)}");
+				EventLog.WriteEntry(LogFile.eventLogSource, LogFile.StringFormat(nameof(DetainedLicenseDAL), nameof(RetrieveAll), e.Message));
+
+				LogFile.AddLogToFile(nameof(DetainedLicenseDAL), nameof(RetrieveAll), e.Message, LogFile.ErrorsFile);
 
 				return null;
 			}
@@ -247,10 +260,10 @@ namespace MyDVLD_DAL.Behaviours
 
 			try
 			{
-				using(SqlConnection con = new SqlConnection(DataPath.ConnectionPath))
+				using (SqlConnection con = new SqlConnection(DataPath.ConnectionPath))
 				{
 					con.Open();
-					using(SqlCommand cmd = new SqlCommand(query , con))
+					using (SqlCommand cmd = new SqlCommand(query, con))
 					{
 						// Send the parameters
 						DetainedLicenseBinder.UpdateParameters(cmd, detainedLicense);
@@ -260,9 +273,11 @@ namespace MyDVLD_DAL.Behaviours
 					}
 				}
 			}
-			catch(Exception e)
+			catch (Exception e)
 			{
-				Debug.WriteLine($"Error In {nameof(DetainedLicenseDAL)}.{nameof(Update)}\n{nameof(e.Message)}");
+				EventLog.WriteEntry(LogFile.eventLogSource, LogFile.StringFormat(nameof(DetainedLicenseDAL), nameof(Update), e.Message));
+
+				LogFile.AddLogToFile(nameof(DetainedLicenseDAL), nameof(Update), e.Message, LogFile.ErrorsFile);
 				return false;
 			}
 		}

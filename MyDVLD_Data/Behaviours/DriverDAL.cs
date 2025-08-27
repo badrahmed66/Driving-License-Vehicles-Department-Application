@@ -6,6 +6,7 @@ using MyDVLD_DTOs;
 using System.Data;
 using System.Diagnostics;
 using MyDVLD_DAL.Mapper;
+using MyDVLD_DAL.Utility;
 
 namespace MyDVLD_DAL.Behaviours
 {
@@ -43,7 +44,10 @@ namespace MyDVLD_DAL.Behaviours
 			}
 			catch(Exception ex)
 			{
-				Debug.WriteLine($"Error in {nameof(DriverDAL)}.{nameof(FindByDriverID)}/n {ex.Message}");
+				LogFile.AddLogToFile(nameof(DriverDAL), nameof(FindByDriverID), ex.Message, LogFile.ErrorsFile);
+
+				EventLog.WriteEntry(LogFile.eventLogSource, LogFile.StringFormat(nameof(DriverDAL), nameof(FindByDriverID), ex.Message));
+
 				return null;
 			}
 		}
@@ -76,7 +80,9 @@ namespace MyDVLD_DAL.Behaviours
 			}
 			catch (Exception ex)
 			{
-				Debug.WriteLine($"Error in {nameof(DriverDAL)}.{nameof(FindByDriverID)}/n {ex.Message}");
+				LogFile.AddLogToFile(nameof(DriverDAL), nameof(FindByPersonID), ex.Message, LogFile.ErrorsFile);
+
+				EventLog.WriteEntry(LogFile.eventLogSource, LogFile.StringFormat(nameof(DriverDAL), nameof(FindByPersonID), ex.Message));
 				return null;
 			}
 		}
@@ -111,9 +117,11 @@ namespace MyDVLD_DAL.Behaviours
 					
 				}
 			}
-			catch(Exception e)
+			catch(Exception ex)
 			{
-				Debug.WriteLine($"Error in {nameof(DriverDAL)}.{nameof(RetrieveAll)}/n {e.Message}");
+				LogFile.AddLogToFile(nameof(DriverDAL), nameof(RetrieveAll), ex.Message, LogFile.ErrorsFile);
+
+				EventLog.WriteEntry(LogFile.eventLogSource, LogFile.StringFormat(nameof(DriverDAL), nameof(RetrieveAll), ex.Message));
 				return null;
 			}
 		}
@@ -147,9 +155,11 @@ namespace MyDVLD_DAL.Behaviours
 					}
 				}
 			}
-			catch(Exception e)
+			catch(Exception ex)
 			{
-				Debug.WriteLine($"Error in {nameof(DriverDAL)}.{nameof(Insert)}/n {e.Message}");
+				LogFile.AddLogToFile(nameof(DriverDAL), nameof(Insert), ex.Message, LogFile.ErrorsFile);
+
+				EventLog.WriteEntry(LogFile.eventLogSource, LogFile.StringFormat(nameof(DriverDAL), nameof(Insert), ex.Message));
 				return -1;
 			}
 		}
@@ -186,9 +196,11 @@ namespace MyDVLD_DAL.Behaviours
 					}
 				}
 			}
-			catch(Exception e)
+			catch(Exception ex)
 			{
-				Debug.WriteLine($"Error in {nameof(DriverDAL)}.{nameof(Update)}/n {e.Message}");
+				LogFile.AddLogToFile(nameof(DriverDAL), nameof(Update), ex.Message, LogFile.ErrorsFile);
+
+				EventLog.WriteEntry(LogFile.eventLogSource, LogFile.StringFormat(nameof(DriverDAL), nameof(Update), ex.Message));
 				return false;
 			}
 		}
